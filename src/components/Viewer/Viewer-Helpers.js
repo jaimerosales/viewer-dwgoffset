@@ -16,14 +16,14 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
 
-
-/* global Autodesk, THREE */
 import Client from '../Client';
+//import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
 var viewer;
 var getToken = { accessToken: Client.getaccesstoken()};
+const Autodesk = window.Autodesk;
 
 
-function launchViewer(div, urn, id) {
+function launchViewer(div, urn) {
   getToken.accessToken.then((token) => {
     var options = {
       'document': urn,
@@ -32,8 +32,8 @@ function launchViewer(div, urn, id) {
     };
 
     var viewerElement = document.getElementById(div);
-    //viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
-    viewer= new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
+    viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
+    //viewer= new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
     Autodesk.Viewing.Initializer(
       options,
       function () {
@@ -74,6 +74,7 @@ function onGeometryLoaded(event) {
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoaded);
         viewer.fitToView();
+        debugger;
         viewer.setQualityLevel(false,false); // Getting rid of Ambientshadows to false to avoid blackscreen problem in Viewer.
 }
 

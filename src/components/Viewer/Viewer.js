@@ -23,8 +23,15 @@ import './Viewer.css';
 class Viewer extends Component {
 
     componentDidMount() {
-        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0LzNkRmFjdG9yeS5kd2Y';
+        // Revit Fabric-brick
+        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0ZhYnJpYy1icmljay5ydnQ';
         Helpers.launchViewer('viewerDiv', documentId);        
+    }
+
+    loadSecondModel() {
+        // Library furniture
+        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L1NoZWxmLXYyLm9iag'
+        Helpers.loadDocument(secondModelId);
     }
 
     render() {
@@ -34,6 +41,9 @@ class Viewer extends Component {
             <div className="forge-logo">
                 <img className="logo-size" src="images/forge-logo.png" alt="Autodesk Forge" />
             </div>
+            <button className="model-button" onClick={this.loadSecondModel} >
+                <i className="fa fa-plus-square"></i>
+            </button>
           </div>
         );
     }
