@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "build-css": "node-sass src/ -o src/",
+    "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
     "start": "npm run start:server",
     "watch": "npm-run-all --parallel start:*",
     "start:server": "node server/server.js",
@@ -41,7 +43,9 @@
     "redux": "^3.6.0",
     "scroll-to": "0.0.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "node-sass": "^4.5.0"
+  },
   "babel": {
     "presets": [
       "es2015",
