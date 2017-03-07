@@ -5,6 +5,7 @@
 import UIComponent from '../UIComponent'
 import './Dropdown.css'
 const $ = window.$;
+const opts = window.opts;
 
 export default class Dropdown extends UIComponent {
 

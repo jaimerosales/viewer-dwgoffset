@@ -1,4 +1,4 @@
-import Snap from 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'
+//import Snap from 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'
 import EventsEmitter from '../EventsEmitter'
 import './Viewer.Tooltip.css'
 const $ = window.$;
@@ -30,8 +30,8 @@ export default class ViewerTooltip extends EventsEmitter {
 
     this.$marker = $(`#${this.markerId}`)
 
-    this.pointer = this.createPointer(
-      $(`#${this.svgId}`)[0])
+    // this.pointer = this.createPointer(
+    //   $(`#${this.svgId}`)[0])
 
     this.viewer = viewer
 
@@ -42,53 +42,53 @@ export default class ViewerTooltip extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  createPointer (element) {
+  // createPointer (element) {
 
-    const snap = Snap(element)
+  //   const snap = Snap(element)
 
-    let circle = snap.paper.circle(
-      25, 25, 0)
+  //   let circle = snap.paper.circle(
+  //     25, 25, 0)
 
-    circle.attr({
-      stroke: '#00FF00',
-      fillOpacity: 0.4,
-      fill: '#00FF00',
-      strokeWidth: 2,
-      opacity: 1
-    })
+  //   circle.attr({
+  //     stroke: '#00FF00',
+  //     fillOpacity: 0.4,
+  //     fill: '#00FF00',
+  //     strokeWidth: 2,
+  //     opacity: 1
+  //   })
 
-    return circle
-  }
+  //   return circle
+  // }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  animatePointer (id) {
+  // animatePointer (id) {
 
-    if(this.animateId === id) {
+  //   if(this.animateId === id) {
 
-      this.pointer.attr({
-        fillOpacity: 0.8,
-        opacity: 1,
-        r: 0
-      })
+  //     this.pointer.attr({
+  //       fillOpacity: 0.8,
+  //       opacity: 1,
+  //       r: 0
+  //     })
 
-      this.pointer.animate({
-          fillOpacity: 0.2,
-          opacity: 0.4,
-          r: 16
-        },
-        2000,
-        mina.easein, () => {
+  //     this.pointer.animate({
+  //         fillOpacity: 0.2,
+  //         opacity: 0.4,
+  //         r: 16
+  //       },
+  //       2000,
+  //       mina.easein, () => {
 
-          if (this.pointerVisible) {
+  //         if (this.pointerVisible) {
 
-            this.animatePointer(id)
-          }
-        })
-    }
-  }
+  //           this.animatePointer(id)
+  //         }
+  //       })
+  //   }
+  // }
 
   /////////////////////////////////////////////////////////////////
   //
@@ -214,8 +214,8 @@ export default class ViewerTooltip extends EventsEmitter {
 
         this.animateId = this.guid()
 
-        this.animatePointer(
-          this.animateId)
+        // this.animatePointer(
+        //   this.animateId)
       }
 
     } else {

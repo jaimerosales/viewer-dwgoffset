@@ -21,6 +21,7 @@ import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
 var viewer;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;
+const THREE = window.THREE;
 
 
 function launchViewer(div, urn) {
@@ -32,14 +33,18 @@ function launchViewer(div, urn) {
     };
 
     var viewerElement = document.getElementById(div);
-    viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
-    //viewer= new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
+    //viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
+    viewer= new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
     Autodesk.Viewing.Initializer(
       options,
       function () {
         viewer.initialize();
         viewer.prefs.tag('ignore-producer')
         loadDocument(options.document);
+        viewer.loadExtension(ModelTransformerExtension, {
+          parentControl: 'modelTools',
+          autoLoad: true
+        })
       }
     );
   })
@@ -55,6 +60,7 @@ function loadDocument(documentId){
         });
         viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
         viewer.load(doc.getViewablePath(geometryItems[0])); // show 1st view on this document...
+        // viewer.loadModel USE THIS INSTEAD
       }
     },
     function (errorMsg) { // onErrorCallback
@@ -74,9 +80,66 @@ function onGeometryLoaded(event) {
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoaded);
         viewer.fitToView();
-        debugger;
-        viewer.setQualityLevel(false,false); // Getting rid of Ambientshadows to false to avoid blackscreen problem in Viewer.
+        // debugger;
+        // viewer.setQualityLevel(false,false); // Getting rid of Ambientshadows to false to avoid blackscreen problem in Viewer.
+        // if (viewer.impl.modelQueue().getModels()[1]){
+        //   applytoModel(viewer.impl.modelQueue().getModels()[1]);
+        // }
+
 }
+
+  /////////////////////////////////////////////////////////////////
+  // Applies transform to specific model
+  //
+  /////////////////////////////////////////////////////////////////
+  // function applyTransform (model) {
+  //   debugger;
+  //   var euler = new THREE.Euler(
+  //     model.transform.rotation.x * Math.PI/180,
+  //     model.transform.rotation.y * Math.PI/180,
+  //     model.transform.rotation.z * Math.PI/180,
+  //     'XYZ')
+
+  //   var quaternion = new THREE.Quaternion()
+
+  //   quaternion.setFromEuler(euler)
+
+  //   function _transformFragProxy (fragId) {
+
+  //     var fragProxy = viewer.impl.getFragmentProxy(
+  //       model,
+  //       fragId)
+
+  //     fragProxy.getAnimTransform()
+
+  //     fragProxy.position = model.transform.translation
+
+  //     fragProxy.scale = model.transform.scale
+
+  //     //Not a standard three.js quaternion
+  //     fragProxy.quaternion._x = quaternion.x
+  //     fragProxy.quaternion._y = quaternion.y
+  //     fragProxy.quaternion._z = quaternion.z
+  //     fragProxy.quaternion._w = quaternion.w
+
+  //     fragProxy.updateAnimTransform()
+  //   }
+
+  //   var fragCount = model.getFragmentList().fragments.fragId2dbId.length
+
+  //   //fragIds range from 0 to fragCount-1
+  //   for (var fragId = 0; fragId < fragCount; ++fragId) {
+
+  //     _transformFragProxy(fragId)
+  //   }
+  // }
+
+  function applytoModel() {
+    viewer.loadExtension(ModelTransformerExtension, {
+          parentControl: 'modelTools',
+          autoLoad: true
+        })
+  }
 
 
 export function viewerResize() {
@@ -85,7 +148,8 @@ export function viewerResize() {
 
 const Helpers = {
   launchViewer,
-  loadDocument
+  loadDocument,
+  applytoModel
 };
 
 export default Helpers;
