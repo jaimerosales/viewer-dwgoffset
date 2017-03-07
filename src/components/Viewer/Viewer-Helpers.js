@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 import Client from '../Client';
-//import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
+import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
 var viewer;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;

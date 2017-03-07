@@ -2,14 +2,12 @@
   position: absolute;
   top: 20px;
   left: 30px;
-  z-index: 2;
-}
+  z-index: 2; }
 
-.logo-size{
-	width: 50%;
-}
+.logo-size {
+  width: 50%; }
 
-.model-button{
+.model-button {
   background-color: #878787;
   border-radius: 50%;
   border: none;
@@ -24,5 +22,4 @@
   text-align: center;
   width: 55px;
   z-index: 2;
-  outline: none;
-}
+  outline: none; }
