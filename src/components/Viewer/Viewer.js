@@ -29,8 +29,8 @@ class Viewer extends Component {
     }
 
     loadSecondModel() {
-        // Library furniture
-        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L1NoZWxmLXYyLm9iag'
+        // Fusion furniture
+        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA'
         Helpers.loadDocument(secondModelId);
     }
 
