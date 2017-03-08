@@ -24,6 +24,7 @@ var indexViewable;
 var lmvDoc;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;
+const THREE = window.THREE;
 
 function launchViewer(documentId) {
  getToken.accessToken.then((token) => { 
@@ -124,6 +125,10 @@ function loadNextModel(documentId) {
 function loadModel() {
     var initialViewable = viewables[indexViewable];
     var svfUrl = lmvDoc.getViewablePath(initialViewable);
+
+    var placementTransform = new THREE.Matrix4() //(see THREE.js doc for details about Matrix4 methods ...)
+
+
     var modelOptions = {
         sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
     };
