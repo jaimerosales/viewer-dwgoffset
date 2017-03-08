@@ -21,9 +21,9 @@
 
     function getTranslation() {
 
-      var x = -49.20
-      var y = 14.90
-      var z = -4.90
+      var x = -80.00
+      var y = -25.00
+      var z = -18.00
 
       // x = isNaN(x) ? 0.0 : x;
       // y = isNaN(y) ? 0.0 : y;

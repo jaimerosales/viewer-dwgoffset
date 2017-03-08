@@ -65,6 +65,7 @@ function onDocumentLoadSuccess(doc) {
     
     viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
     viewer.prefs.tag('ignore-producer');
+    viewer.impl.disableRollover(true);
     viewer.loadExtension(ModelTransformerExtension, {
          parentControl: 'modelTools',
          autoLoad: true
@@ -128,7 +129,6 @@ function loadModel() {
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
         var modelOptions;
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
-            console.log("I'm the 2nd model");
             modelOptions = {
                 placementTransform: Transform.buildTransformMatrix()
             };
@@ -138,7 +138,7 @@ function loadModel() {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
         }
-        console.log('modeloptions', modelOptions);
+        
         viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
 
     })
