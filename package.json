@@ -9,7 +9,7 @@
     "watch": "npm-run-all --parallel watch-css start:*",
     "start:server": "node src/server/server.js",
     "start:client": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "postinstall": "npm run build"
