@@ -1,3 +1,4 @@
+/* eslint-disable */
 import EventsEmitter from '../components/EventsEmitter'
 const Autodesk = window.Autodesk;
 const THREE = window.THREE;

@@ -3,6 +3,7 @@
 //
 //
 /////////////////////////////////////////////////////////////////////
+/* eslint-disable */
 import TranslateTool from './Viewing.Tool.Translate'
 import './Viewing.Extension.ModelTransformer.css'
 import RotateTool from './Viewing.Tool.Rotate'

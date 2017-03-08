@@ -25,14 +25,14 @@ class Viewer extends Component {
     componentDidMount() {
         // Revit Fabric-brick
         var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0ZhYnJpYy1icmljay5ydnQ';
-        Helpers.launchViewer('viewerDiv', documentId);        
+        Helpers.launchViewer(documentId);        
     }
 
     loadSecondModel() {
         // Fusion furniture
         var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA'
-        Helpers.loadDocument(secondModelId);
-        Helpers.applytoModel()
+        Helpers.loadNextModel(secondModelId);
+
     }
 
     render() {

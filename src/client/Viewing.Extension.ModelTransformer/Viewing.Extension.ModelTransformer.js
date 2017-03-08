@@ -3,6 +3,7 @@
 // by Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////////////
+/* eslint-disable */
 import Panel from './Viewing.Extension.ModelTransformer.Panel'
 import ExtensionBase from '../components/Viewer.ExtensionBase'
 import ViewerToolkit from '../components/Viewer.Toolkit'

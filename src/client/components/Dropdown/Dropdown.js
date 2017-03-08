@@ -2,6 +2,8 @@
 // Create dropwdown menu
 //
 /////////////////////////////////////////////////////////////
+/* eslint-disable */
+
 import UIComponent from '../UIComponent'
 import './Dropdown.css'
 const $ = window.$;

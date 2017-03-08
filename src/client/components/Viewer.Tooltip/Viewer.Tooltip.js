@@ -1,4 +1,5 @@
 //import Snap from 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'
+/* eslint-disable */
 import EventsEmitter from '../EventsEmitter'
 import './Viewer.Tooltip.css'
 const $ = window.$;

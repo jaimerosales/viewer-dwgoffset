@@ -19,55 +19,89 @@
 import Client from '../Client';
 import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
 var viewer;
+var viewables;
+var indexViewable;
+var lmvDoc;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;
-const THREE = window.THREE;
 
-
-function launchViewer(div, urn) {
-  getToken.accessToken.then((token) => {
+function launchViewer(documentId) {
+ getToken.accessToken.then((token) => { 
     var options = {
-      'document': urn,
-      'env': 'AutodeskProduction',
-      'accessToken': token.access_token
-    };
+            env: 'AutodeskProduction',
+            accessToken: token.access_token
+        };
+        var viewerDiv = document.getElementById('viewerDiv');
+        viewer = new Autodesk.Viewing.Private.GuiViewer3D(viewerDiv);
 
-    var viewerElement = document.getElementById(div);
-    //viewer = new Autodesk.Viewing.Viewer3D(viewerElement, {});
-    viewer= new Autodesk.Viewing.Private.GuiViewer3D(viewerElement, {});
-    Autodesk.Viewing.Initializer(
-      options,
-      function () {
-        viewer.initialize();
-        viewer.prefs.tag('ignore-producer')
-        loadDocument(options.document);
-        viewer.loadExtension(ModelTransformerExtension, {
-          parentControl: 'modelTools',
-          autoLoad: true
-        })
-      }
-    );
-  })
-}
+        Autodesk.Viewing.Initializer(options, function onInitialized(){
+            var errorCode = viewer.start();
 
-function loadDocument(documentId){
-  Autodesk.Viewing.Document.load(
-    documentId,
-    function (doc) { // onLoadCallback
-      var geometryItems = Autodesk.Viewing.Document.getSubItemsWithProperties(doc.getRootItem(), {'type':'geometry'}, true);
-      if (geometryItems.length > 0) {
-        geometryItems.forEach(function (item, index) {
+            // Check for initialization errors.
+            if (errorCode) {
+                console.error('viewer.start() error - errorCode:' + errorCode);
+                return;
+            }
+            Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
         });
-        viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
-        viewer.load(doc.getViewablePath(geometryItems[0])); // show 1st view on this document...
-        // viewer.loadModel USE THIS INSTEAD
-      }
-    },
-    function (errorMsg) { // onErrorCallback
-      console.log(errorMsg);
-    }
-  )
+ })
 }
+
+/**
+ * Autodesk.Viewing.Document.load() success callback.
+ * Proceeds with model initialization.
+ */
+function onDocumentLoadSuccess(doc) {
+
+    // A document contains references to 3D and 2D viewables.
+    viewables = Autodesk.Viewing.Document.getSubItemsWithProperties(doc.getRootItem(), {'type':'geometry'}, true);
+    if (viewables.length === 0) {
+        console.error('Document contains no viewables.');
+        return;
+    }
+
+    //load model.
+    
+    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
+    viewer.prefs.tag('ignore-producer');
+    viewer.loadExtension(ModelTransformerExtension, {
+         parentControl: 'modelTools',
+         autoLoad: true
+    })
+    // Choose any of the available viewables.
+    indexViewable = 0;
+    lmvDoc = doc;
+
+    // Everything is set up, load the model.
+    loadModel();
+}
+
+
+        /**
+         * Autodesk.Viewing.Document.load() failuire callback.
+         */
+        function onDocumentLoadFailure(viewerErrorCode) {
+            console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+        }
+
+        /**
+         * viewer.loadModel() success callback.
+         * Invoked after the model's SVF has been initially loaded.
+         * It may trigger before any geometry has been downloaded and displayed on-screen.
+         */
+        function onLoadModelSuccess(model) {
+            console.log('onLoadModelSuccess()!');
+            console.log('Validate model loaded: ' + (viewer.model === model));
+            console.log(model);
+        }
+
+        /**
+         * viewer.loadModel() failure callback.
+         * Invoked when there's an error fetching the SVF file.
+         */
+        function onLoadModelError(viewerErrorCode) {
+            console.error('onLoadModelError() - errorCode:' + viewerErrorCode);
+        }
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,76 +114,28 @@ function onGeometryLoaded(event) {
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoaded);
         viewer.fitToView();
-        // debugger;
-        // viewer.setQualityLevel(false,false); // Getting rid of Ambientshadows to false to avoid blackscreen problem in Viewer.
-        // if (viewer.impl.modelQueue().getModels()[1]){
-        //   applytoModel(viewer.impl.modelQueue().getModels()[1]);
-        // }
-
 }
 
-  /////////////////////////////////////////////////////////////////
-  // Applies transform to specific model
-  //
-  /////////////////////////////////////////////////////////////////
-  // function applyTransform (model) {
-  //   debugger;
-  //   var euler = new THREE.Euler(
-  //     model.transform.rotation.x * Math.PI/180,
-  //     model.transform.rotation.y * Math.PI/180,
-  //     model.transform.rotation.z * Math.PI/180,
-  //     'XYZ')
+function loadNextModel(documentId) {
 
-  //   var quaternion = new THREE.Quaternion()
-
-  //   quaternion.setFromEuler(euler)
-
-  //   function _transformFragProxy (fragId) {
-
-  //     var fragProxy = viewer.impl.getFragmentProxy(
-  //       model,
-  //       fragId)
-
-  //     fragProxy.getAnimTransform()
-
-  //     fragProxy.position = model.transform.translation
-
-  //     fragProxy.scale = model.transform.scale
-
-  //     //Not a standard three.js quaternion
-  //     fragProxy.quaternion._x = quaternion.x
-  //     fragProxy.quaternion._y = quaternion.y
-  //     fragProxy.quaternion._z = quaternion.z
-  //     fragProxy.quaternion._w = quaternion.w
-
-  //     fragProxy.updateAnimTransform()
-  //   }
-
-  //   var fragCount = model.getFragmentList().fragments.fragId2dbId.length
-
-  //   //fragIds range from 0 to fragCount-1
-  //   for (var fragId = 0; fragId < fragCount; ++fragId) {
-
-  //     _transformFragProxy(fragId)
-  //   }
-  // }
-
-  function applytoModel() {
-    viewer.loadExtension(ModelTransformerExtension, {
-          parentControl: 'modelTools',
-          autoLoad: true
-        })
-  }
-
-
-export function viewerResize() {
-  viewer.resize();
+    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
 }
+
+function loadModel() {
+    var initialViewable = viewables[indexViewable];
+    var svfUrl = lmvDoc.getViewablePath(initialViewable);
+    var modelOptions = {
+        sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
+    };
+    viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
+}
+
+
+
 
 const Helpers = {
   launchViewer,
-  loadDocument,
-  applytoModel
+  loadNextModel
 };
 
 export default Helpers;

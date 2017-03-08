@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const Autodesk = window.Autodesk;
 const THREE = window.THREE;
 

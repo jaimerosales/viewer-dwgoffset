@@ -1,3 +1,4 @@
+/* eslint-disable */
 import EventsEmitter from '../components/EventsEmitter'
 import './TransformGizmos'
 const Autodesk = window.Autodesk;
