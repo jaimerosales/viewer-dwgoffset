@@ -59,10 +59,5 @@
   "engines": {
     "node": "6.7.x",
     "npm": "3.10.x"
-  },
-  "eslingConfig": {
-    "rules": {
-      
-    }
   }
 }
