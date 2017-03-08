@@ -17,14 +17,14 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 import Client from '../Client';
-import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer'
+import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
+import Transform from '../Transformation/Transform';
 var viewer;
 var viewables;
 var indexViewable;
 var lmvDoc;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;
-const THREE = window.THREE;
 
 function launchViewer(documentId) {
  getToken.accessToken.then((token) => { 
@@ -123,19 +123,26 @@ function loadNextModel(documentId) {
 }
 
 function loadModel() {
-    var initialViewable = viewables[indexViewable];
-    var svfUrl = lmvDoc.getViewablePath(initialViewable);
+    return new Promise(async(resolve, reject)=> {
+        var initialViewable = viewables[indexViewable];
+        var svfUrl = lmvDoc.getViewablePath(initialViewable);
+        var modelOptions;
+        if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
+            console.log("I'm the 2nd model");
+            modelOptions = {
+                placementTransform: Transform.buildTransformMatrix()
+            };
+        }
+        else {
+            modelOptions = {
+                sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
+            };
+        }
+        console.log('modeloptions', modelOptions);
+        viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
 
-    var placementTransform = new THREE.Matrix4() //(see THREE.js doc for details about Matrix4 methods ...)
-
-
-    var modelOptions = {
-        sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
-    };
-    viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
-}
-
-
+    })
+    }
 
 
 const Helpers = {
