@@ -34,7 +34,7 @@ app.set('port', (process.env.PORT || 3001));
 app.use(express.static(buildDirectory))
 
 app.get('/', function (req, res) {
-  res.sendFile(`${buildDirectory}/../index.html`)
+  res.sendFile(`${buildDirectory}/../../index.html`)
 })
 app.get ('/token', function (req, res) {
   request.post(
