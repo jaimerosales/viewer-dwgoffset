@@ -1,7 +1,7 @@
 {
   "name": "viewer-layout",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "scripts": {
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
