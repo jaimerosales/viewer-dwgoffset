@@ -238,10 +238,11 @@ class ModelTransformerExtension extends ExtensionBase {
 
       this._viewer.impl.sceneUpdated(true)
 
-      if (data.fitToView) {
+      // DISABLING FIT TO VIEW for XYPLANE DEMO
 
-        this.fitModelToView(data.model)
-      }
+      // if (data.fitToView) {
+      //   this.fitModelToView(data.model)
+      // }
     })
 
     this.panel.on('model.delete', (data) => {
@@ -256,10 +257,11 @@ class ModelTransformerExtension extends ExtensionBase {
 
       this.currentSelection = data.selection
 
-      if (data.fitToView) {
+      // DISABLING FIT TO VIEW for XYPLANE DEMO
 
-        this.fitModelToView(data.model)
-      }
+      // if (data.fitToView) {
+      //   this.fitModelToView(data.model)
+      // }
     })
 
     if (this._options.parentControl) {

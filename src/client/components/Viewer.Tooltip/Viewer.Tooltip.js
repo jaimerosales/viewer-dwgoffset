@@ -227,9 +227,13 @@ export default class ViewerTooltip extends EventsEmitter {
         display: 'none'
       })
 
-      this.pointer.attr({
-        r: 0
-      })
+
+      // NOT USING DROPDOWN IN XYPLANE SAMPLE SO NO NEED TO GET ATTR FOR MODEL NAME
+      // ERRORS WHEN UNCOMMENTED SINCE ATTR IS UNDEFINED, SINCE OPTS IS ALSO IN DROPDOWN CLASS
+      
+      // this.pointer.attr({
+      //   r: 0
+      // })
     }
 
     return false

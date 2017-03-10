@@ -252,8 +252,11 @@ export default class ModelTransformerPanel extends ToolPanelBase {
 
       <div class="container">
 
-        <div id="${this.dropdownContainerId}">
-        </div>
+        <button id="${this.transPickBtnId}"
+            class="btn btn-trans-pick" disabled>
+            <span class="glyphicon glyphicon-screenshot btn-span">
+            </span>
+          </button>
 
         <hr class="v-spacer">
 
@@ -265,11 +268,7 @@ export default class ModelTransformerPanel extends ToolPanelBase {
 
           <hr class="v-spacer">
 
-          <button id="${this.transPickBtnId}"
-            class="btn btn-trans-pick" disabled>
-            <span class="glyphicon glyphicon-screenshot btn-span">
-            </span>
-          </button>
+          
 
           <input id="${id}-Tx" type="text"
             class="input numeric trans"

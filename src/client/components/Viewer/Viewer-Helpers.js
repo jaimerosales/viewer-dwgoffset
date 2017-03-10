@@ -25,6 +25,7 @@ var indexViewable;
 var lmvDoc;
 var getToken = { accessToken: Client.getaccesstoken()};
 const Autodesk = window.Autodesk;
+//const THREE = window.THREE;
 
 function launchViewer(documentId) {
  getToken.accessToken.then((token) => { 
@@ -116,6 +117,7 @@ function onGeometryLoaded(event) {
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoaded);
         viewer.fitToView();
+            debugger;
 }
 
 function loadNextModel(documentId) {
@@ -123,12 +125,24 @@ function loadNextModel(documentId) {
     Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
 }
 
+// function TransformSimple (){
+//     var m = new THREE.Matrix4()
+//     m.makeScale ( 0.0055, 0.0055, 0.0055 )
+//     var opts =  {
+//         placementTransform: m
+//     }
+//     return opts
+// }
+
+
+
 function loadModel() {
     return new Promise(async(resolve, reject)=> {
         var initialViewable = viewables[indexViewable];
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
         var modelOptions;
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
+            
             modelOptions = {
                 placementTransform: Transform.buildTransformMatrix()
             };
@@ -138,7 +152,7 @@ function loadModel() {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
         }
-        
+  
         viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
 
     })
