@@ -20,10 +20,11 @@ import Client from '../Client';
 import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
 import Transform from '../Transformation/Transform';
 var viewer;
-var viewables;
-var indexViewable;
-var lmvDoc;
 var getToken = { accessToken: Client.getaccesstoken()};
+
+/// WHY I'M USING GLOBAL VARIABLES, SIMPLE I'M SETTING UP WITH REACT-SCRIPTS FOR EASIER 3RD PARTY DEVELOPER USE OF PROJECT
+/// https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#using-global-variables
+
 const Autodesk = window.Autodesk;
 //const THREE = window.THREE;
 
@@ -32,18 +33,19 @@ function launchViewer(documentId) {
     var options = {
             env: 'AutodeskProduction',
             accessToken: token.access_token
-        };
-        var viewerDiv = document.getElementById('viewerDiv');
-        viewer = new Autodesk.Viewing.Private.GuiViewer3D(viewerDiv);
+    };
+    
+    var viewerDiv = document.getElementById('viewerDiv');
+    viewer = new Autodesk.Viewing.Private.GuiViewer3D(viewerDiv);
 
-        Autodesk.Viewing.Initializer(options, function onInitialized(){
-            var errorCode = viewer.start();
+    Autodesk.Viewing.Initializer(options, function onInitialized(){
+        var errorCode = viewer.start();
 
-            // Check for initialization errors.
-            if (errorCode) {
-                console.error('viewer.start() error - errorCode:' + errorCode);
-                return;
-            }
+        // Check for initialization errors.
+        if (errorCode) {
+            console.error('viewer.start() error - errorCode:' + errorCode);
+            return;
+        }
             Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
         });
  })
@@ -56,14 +58,13 @@ function launchViewer(documentId) {
 function onDocumentLoadSuccess(doc) {
 
     // A document contains references to 3D and 2D viewables.
-    viewables = Autodesk.Viewing.Document.getSubItemsWithProperties(doc.getRootItem(), {'type':'geometry'}, true);
+    var viewables = Autodesk.Viewing.Document.getSubItemsWithProperties(doc.getRootItem(), {'type':'geometry'}, true);
     if (viewables.length === 0) {
         console.error('Document contains no viewables.');
         return;
     }
 
     //load model.
-    
     viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
@@ -72,39 +73,38 @@ function onDocumentLoadSuccess(doc) {
          autoLoad: true
     })
     // Choose any of the available viewables.
-    indexViewable = 0;
-    lmvDoc = doc;
+    var indexViewable = 0;
+    var lmvDoc = doc;
 
     // Everything is set up, load the model.
-    loadModel();
+    loadModel(viewables, lmvDoc, indexViewable);
 }
 
+/**
+* Autodesk.Viewing.Document.load() failuire callback.
+**/
+function onDocumentLoadFailure(viewerErrorCode) {
+    console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+}
 
-        /**
-         * Autodesk.Viewing.Document.load() failuire callback.
-         */
-        function onDocumentLoadFailure(viewerErrorCode) {
-            console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
-        }
+/**
+* viewer.loadModel() success callback.
+* Invoked after the model's SVF has been initially loaded.
+* It may trigger before any geometry has been downloaded and displayed on-screen.
+**/
+function onLoadModelSuccess(model) {
+    console.log('onLoadModelSuccess()!');
+    console.log('Validate model loaded: ' + (viewer.model === model));
+    console.log(model);
+}
 
-        /**
-         * viewer.loadModel() success callback.
-         * Invoked after the model's SVF has been initially loaded.
-         * It may trigger before any geometry has been downloaded and displayed on-screen.
-         */
-        function onLoadModelSuccess(model) {
-            console.log('onLoadModelSuccess()!');
-            console.log('Validate model loaded: ' + (viewer.model === model));
-            console.log(model);
-        }
-
-        /**
-         * viewer.loadModel() failure callback.
-         * Invoked when there's an error fetching the SVF file.
-         */
-        function onLoadModelError(viewerErrorCode) {
-            console.error('onLoadModelError() - errorCode:' + viewerErrorCode);
-        }
+/**
+* viewer.loadModel() failure callback.
+* Invoked when there's an error fetching the SVF file.
+*/
+function onLoadModelError(viewerErrorCode) {
+    console.error('onLoadModelError() - errorCode:' + viewerErrorCode);
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -121,28 +121,20 @@ function onGeometryLoaded(event) {
 }
 
 function loadNextModel(documentId) {
-
     Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
 }
 
-// function TransformSimple (){
-//     var m = new THREE.Matrix4()
-//     m.makeScale ( 0.0055, 0.0055, 0.0055 )
-//     var opts =  {
-//         placementTransform: m
-//     }
-//     return opts
-// }
+function topCameraView(){
+    viewer.setViewCube("[top]");
 
+}
 
-
-function loadModel() {
+function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {
         var initialViewable = viewables[indexViewable];
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
-        var modelOptions;
+        var modelOptions; // = TransformSimple();   
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
-            
             modelOptions = {
                 placementTransform: Transform.buildTransformMatrix()
             };
@@ -152,16 +144,15 @@ function loadModel() {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
         }
-  
         viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
-
     })
-    }
+}
 
 
 const Helpers = {
   launchViewer,
-  loadNextModel
+  loadNextModel,
+  topCameraView
 };
 
 export default Helpers;
