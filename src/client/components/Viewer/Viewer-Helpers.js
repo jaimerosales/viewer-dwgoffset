@@ -122,11 +122,10 @@ function loadNextModel(documentId) {
       </div>`, '#pickTooltipId')
 
     if (!pointData.point){
-        alert('You need to select a point in the house floor to snap your Rack');
+        alert('You need to select a point on the house floor to snap your Rack');
         pickVar.tooltip.activate();
     }
     else{
-        alert('Attaching Server Rack Unit')
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
         pickVar.tooltip.deactivate();
     }
@@ -159,7 +158,7 @@ function matrixTransform(){
             console.log('Clipped to Floor Z axis');
         }
         else {
-            alert('You need to select a point in the Floor');
+            alert('You need to select a point on the Floor');
         }
                       
         var q = new THREE.Quaternion();
