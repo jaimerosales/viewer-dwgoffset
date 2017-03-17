@@ -14,7 +14,7 @@ This Sample demonstrates the use of Transformation access in the Forge Viewer, t
 
 ![](public/images/viewer-xyplane-preview.png) 
 
-###Steps to debug.
+### Steps to debug.
 
 The models have been added to the repo, you will need to translate them with your own API keys and host them in your own Bucket. 
 
