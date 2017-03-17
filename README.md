@@ -14,6 +14,32 @@ This Sample demonstrates the use of Transformation access in the Forge Viewer, t
 
 ![](public/images/viewer-xyplane-preview.png) 
 
+###Steps to debug.
+
+The models have been added to the repo, you will need to translate them with your own API keys and host them in your own Bucket. 
+
+I'm using a 2 legged Authentication. 
+
+### Steps to use
+
+- Pick a point in the floor of the model
+
+- Add a rack to the room by clicking the ‘+’ button on the bottom left.
+
+- To move the rack around:
+
+ - Click the button in the toolbar that has a ‘3 interlocked gear’ icon.
+
+ - Select the rack.
+
+ - Use the translation widget that appears to pull the rack around 
+
+ 
+You can insert additional racks by repeating the above.
+
+
+### Web Technologies
+
 The sample is using the following Web Technologies.
 
 - Forge Authentication API
