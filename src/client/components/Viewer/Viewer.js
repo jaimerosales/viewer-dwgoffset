@@ -36,7 +36,8 @@ class Viewer extends Component {
     }
 
     moveToTopView() {
-        Helpers.topCameraView();
+        // Helpers.topCameraView();
+        alert('Implementation will be available soon')
     }
 
     render() {
@@ -49,9 +50,10 @@ class Viewer extends Component {
             <button className="model-button" onClick={this.loadSecondModel} >
                 <i className="fa fa-plus-square"></i>
             </button>
-            <button className="plane-button" onClick={this.moveToTopView} >
-                <i className="fa fa-arrows"></i>
-            </button>
+
+             <button className="plane-button" onClick={this.moveToTopView} >
+                 <i className="fa fa-arrows"></i>
+             </button> 
           </div>
         );
     }

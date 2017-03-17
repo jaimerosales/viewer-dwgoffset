@@ -252,6 +252,17 @@ export default class ModelTransformerPanel extends ToolPanelBase {
 
       <div class="container">
 
+         <div id="${this.dropdownContainerId}">
+        </div>
+
+        <hr class="v-spacer">
+
+        <span class="text-span">
+            Snap:
+          </span>
+
+          <hr class="v-spacer">
+
         <button id="${this.transPickBtnId}"
             class="btn btn-trans-pick" disabled>
             <span class="glyphicon glyphicon-screenshot btn-span">

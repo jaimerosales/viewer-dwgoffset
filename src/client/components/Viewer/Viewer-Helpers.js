@@ -18,15 +18,18 @@
 
 import Client from '../Client';
 import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
-import Transform from '../Transformation/Transform';
-var viewer;
-var getToken = { accessToken: Client.getaccesstoken()};
+import EventTool from '../Viewer.EventTool/Viewer.EventTool'
 
+var viewer;
+var pointer;
+
+var getToken = { accessToken: Client.getaccesstoken()};
+var pointData ={};
 /// WHY I'M USING GLOBAL VARIABLES, SIMPLE I'M SETTING UP WITH REACT-SCRIPTS FOR EASIER 3RD PARTY DEVELOPER USE OF PROJECT
 /// https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#using-global-variables
 
 const Autodesk = window.Autodesk;
-//const THREE = window.THREE;
+const THREE = window.THREE;
 
 function launchViewer(documentId) {
  getToken.accessToken.then((token) => { 
@@ -64,8 +67,15 @@ function onDocumentLoadSuccess(doc) {
         return;
     }
 
+    var eventTool = new EventTool(viewer)
+    eventTool.activate()
+    eventTool.on('singleclick', (event) => {
+        pointer = event
+    })
+
     //load model.
-    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
+    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoadedHandler);
+    viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
     viewer.loadExtension(ModelTransformerExtension, {
@@ -87,45 +97,95 @@ function onDocumentLoadFailure(viewerErrorCode) {
     console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
 }
 
-/**
-* viewer.loadModel() success callback.
-* Invoked after the model's SVF has been initially loaded.
-* It may trigger before any geometry has been downloaded and displayed on-screen.
-**/
-function onLoadModelSuccess(model) {
-    console.log('onLoadModelSuccess()!');
-    console.log('Validate model loaded: ' + (viewer.model === model));
-    console.log(model);
-}
-
-/**
-* viewer.loadModel() failure callback.
-* Invoked when there's an error fetching the SVF file.
-*/
-function onLoadModelError(viewerErrorCode) {
-    console.error('onLoadModelError() - errorCode:' + viewerErrorCode);
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Model Geometry loaded callback
 //
 //////////////////////////////////////////////////////////////////////////
-function onGeometryLoaded(event) {
+function onGeometryLoadedHandler(event) {
         var viewer = event.target;
         viewer.removeEventListener(
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
-                onGeometryLoaded);
+                onGeometryLoadedHandler);
         viewer.fitToView();
-            debugger;
+        // viewer.setViewCube(true);
+    
 }
 
 function loadNextModel(documentId) {
-    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    const extInstance = viewer.getExtension(ModelTransformerExtension);
+     const pickVar = extInstance.panel;
+
+     pickVar.tooltip.setContent(`
+      <div id="pickTooltipId" class="pick-tooltip">
+        <b>Pick position ...</b>
+      </div>`, '#pickTooltipId')
+
+    if (!pointData.point){
+        alert('You need to select a point in the house floor to snap your Rack');
+        pickVar.tooltip.activate();
+    }
+    else{
+        alert('Attaching Server Rack Unit')
+        Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+        pickVar.tooltip.deactivate();
+    }
+}
+
+function onSelection (event) {
+
+    if (event.selections && event.selections.length) {
+      // const selection = event.selections[0]
+      // const dbIds = selection.dbIdArray
+      pointData = viewer.clientToWorld(
+        pointer.canvasX,
+        pointer.canvasY,
+        true)
+
+      console.log('This is the pointData ',pointData)
+
+    }
+}
+
+function matrixTransform(){
+   
+        var matrix = new THREE.Matrix4();
+        var t;
+        var euler;
+
+        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 ){
+            t = new THREE.Vector3(pointData.point.x -34 , pointData.point.y -37.5 , pointData.point.z -8.40);
+            euler = new THREE.Euler(90 * Math.PI/180, 0, 0,'XYZ');
+            console.log('Clipped to Floor Z axis');
+        }
+        else {
+            alert('You need to select a point in the Floor');
+        }
+                      
+        var q = new THREE.Quaternion();
+        q.setFromEuler(euler);
+        var s = new THREE.Vector3(0.0055, 0.0055, 0.0055);    
+        matrix.compose(t, q, s);
+
+        return matrix
+ 
 }
 
 function topCameraView(){
     viewer.setViewCube("[top]");
+
+    var mySettings = {
+        orbit: false,
+        pan: true,
+        zoom: true,
+        roll: false,
+        fov: false,
+        gotoview: false,
+        walk: false
+    }
+  
+    viewer.navigation.setLockSettings( mySettings );
+    viewer.navigation.setIsLocked( true );
 
 }
 
@@ -133,18 +193,26 @@ function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {
         var initialViewable = viewables[indexViewable];
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
-        var modelOptions; // = TransformSimple();   
+        var modelOptions; // = TransformSimple(); 
+         var modelName;
+
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
             modelOptions = {
-                placementTransform: Transform.buildTransformMatrix()
+                placementTransform: matrixTransform()
             };
+             modelName = "Rack.f3d"
         }
         else {
             modelOptions = {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
+
+            modelName = "fabric.rvt"
         }
-        viewer.loadModel(svfUrl, modelOptions, onLoadModelSuccess, onLoadModelError);
+        viewer.loadModel(svfUrl, modelOptions, (model) => {
+            model.name = modelName;
+            resolve(model)
+        })
     })
 }
 

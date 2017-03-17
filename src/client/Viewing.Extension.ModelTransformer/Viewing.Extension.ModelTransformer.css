@@ -2,7 +2,7 @@
   top: 110px;
   right: 10px;
   width: 242px;
-  height: 288px;
+  height: 338px;
   resize: none; }
 
 .model-transformer .dockingPanelTitle img,
@@ -58,7 +58,7 @@
 .model-transformer .btn-trans-pick {
   background-color: #EE8822;
   position: relative;
-  width: 50px;
+  width: 200px;
   height: 12px;
   top: -1px; }
 
