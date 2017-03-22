@@ -23,8 +23,8 @@ import './Viewer.css';
 class Viewer extends Component {
 
     componentDidMount() {
-        // Revit Fabric-brick
-        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0ZhYnJpYy1icmljay5ydnQ';
+        // Revit Datacenter
+        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L2RhdGFjZW50ZXIucnZ0';
         Helpers.launchViewer(documentId);        
     }
 

@@ -153,7 +153,7 @@ function matrixTransform(){
         var euler;
 
         if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 ){
-            t = new THREE.Vector3(pointData.point.x -34 , pointData.point.y -37.5 , pointData.point.z -8.40);
+            t = new THREE.Vector3(pointData.point.x -34 , pointData.point.y -37.5 , pointData.point.z -10.55);
             euler = new THREE.Euler(90 * Math.PI/180, 0, 0,'XYZ');
             console.log('Clipped to Floor Z axis');
         }
@@ -163,7 +163,7 @@ function matrixTransform(){
                       
         var q = new THREE.Quaternion();
         q.setFromEuler(euler);
-        var s = new THREE.Vector3(0.0055, 0.0055, 0.0055);    
+        var s = new THREE.Vector3(0.003, 0.003, 0.003);    
         matrix.compose(t, q, s);
 
         return matrix
