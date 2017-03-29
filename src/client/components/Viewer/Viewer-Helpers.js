@@ -107,9 +107,10 @@ function onGeometryLoadedHandler(event) {
         viewer.removeEventListener(
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoadedHandler);
-        viewer.fitToView();
-        // viewer.setViewCube(true);
-    
+        viewer.setQualityLevel(false,false);
+        // viewer.impl.toggleCelShading(true);
+        viewer.setGroundShadow(false);
+        viewer.fitToView();   
 }
 
 function loadNextModel(documentId) {
@@ -141,7 +142,7 @@ function onSelection (event) {
         pointer.canvasY,
         true)
 
-      console.log('This is the pointData ',pointData)
+      //console.log('This is the pointData ',pointData)
 
     }
 }
@@ -205,7 +206,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
             modelOptions = {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
-
+            viewer.impl.toggleCelShading(true);
             modelName = "fabric.rvt"
         }
         viewer.loadModel(svfUrl, modelOptions, (model) => {
