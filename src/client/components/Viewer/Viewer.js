@@ -30,7 +30,7 @@ class Viewer extends Component {
 
     loadSecondModel() {
         // Fusion furniture
-        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA'
+        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0NhYmluZXQuemlw'
         Helpers.loadNextModel(secondModelId);
 
     }
@@ -51,9 +51,6 @@ class Viewer extends Component {
                 <i className="fa fa-plus-square"></i>
             </button>
 
-             <button className="plane-button" onClick={this.moveToTopView} >
-                 <i className="fa fa-arrows"></i>
-             </button> 
           </div>
         );
     }

@@ -153,9 +153,9 @@ function matrixTransform(){
         var t;
         var euler;
 
-        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 ){
-            t = new THREE.Vector3(pointData.point.x -34 , pointData.point.y -37.5 , pointData.point.z -10.55);
-            euler = new THREE.Euler(90 * Math.PI/180, 0, 0,'XYZ');
+        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 && Math.round(pointData.face.normal.z) === 1){
+            t = new THREE.Vector3(pointData.point.x + 408, pointData.point.y + 104 , pointData.point.z + 401.2 );
+            euler = new THREE.Euler(0, 0, 0,'XYZ');
             console.log('Clipped to Floor Z axis');
         }
         else {
@@ -164,9 +164,9 @@ function matrixTransform(){
                       
         var q = new THREE.Quaternion();
         q.setFromEuler(euler);
-        var s = new THREE.Vector3(0.003, 0.003, 0.003);    
+        var s = new THREE.Vector3(0.0035,0.0035,0.0035);    
         matrix.compose(t, q, s);
-
+        matrix.matrixAutoUpdate = false;
         return matrix
  
 }
@@ -196,11 +196,11 @@ function loadModel(viewables, lmvDoc, indexViewable) {
         var modelOptions; // = TransformSimple(); 
          var modelName;
 
-        if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L3JhY2tfYXNzLmYzZA"){
+        if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0NhYmluZXQuemlw"){
             modelOptions = {
                 placementTransform: matrixTransform()
             };
-             modelName = "Rack.f3d"
+             modelName = "Cabinet.iam"
         }
         else {
             modelOptions = {
