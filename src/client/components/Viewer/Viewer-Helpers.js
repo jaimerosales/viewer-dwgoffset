@@ -162,10 +162,12 @@ function matrixTransform(){
             alert('You need to select a point on the Floor');
         }
         matrix.matrixAutoUpdate = false;
+        
         var q = new THREE.Quaternion();
         q.setFromEuler(euler);
-        var s = new THREE.Vector3(0.0035,0.0035,0.0035);    
+        var s = new THREE.Vector3(0.0035,0.0035,0.0035);  
         matrix.compose(t, q, s);
+        
         return matrix
  
 }
@@ -205,7 +207,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
             modelOptions = {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
-            viewer.impl.toggleCelShading(true);
+            //viewer.impl.toggleCelShading(true);
             modelName = "fabric.rvt"
         }
         viewer.loadModel(svfUrl, modelOptions, (model) => {
