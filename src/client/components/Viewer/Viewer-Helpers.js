@@ -161,12 +161,11 @@ function matrixTransform(){
         else {
             alert('You need to select a point on the Floor');
         }
-                      
+        matrix.matrixAutoUpdate = false;
         var q = new THREE.Quaternion();
         q.setFromEuler(euler);
         var s = new THREE.Vector3(0.0035,0.0035,0.0035);    
         matrix.compose(t, q, s);
-        matrix.matrixAutoUpdate = false;
         return matrix
  
 }
