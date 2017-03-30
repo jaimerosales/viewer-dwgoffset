@@ -542,7 +542,6 @@ class ModelTransformerExtension extends ExtensionBase {
           -90 * Math.PI/180)
       }
     }
-
     return placementTransform
   }
 
