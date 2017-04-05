@@ -103,6 +103,7 @@ function onDocumentLoadFailure(viewerErrorCode) {
 //
 //////////////////////////////////////////////////////////////////////////
 function onGeometryLoadedHandler(event) {
+        event.target.model = event.model
         var viewer = event.target;
         viewer.removeEventListener(
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
@@ -146,29 +147,25 @@ function onSelection (event) {
 
     }
 }
-
-function matrixTransform(){
+function floorTransform(){
    
-        var matrix = new THREE.Matrix4();
-        var t;
-        var euler;
-
-        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 && Math.round(pointData.face.normal.z) === 1){
-            t = new THREE.Vector3(pointData.point.x + 408, pointData.point.y + 104 , pointData.point.z + 401.2 );
-            euler = new THREE.Euler(0, 0, 0,'XYZ');
+        var transform = {
+        translation: new THREE.Vector3(0.0, 0.0, 0.0),
+        rotation: new THREE.Vector3(0.0, 0.0, 0.0),
+        scale: new THREE.Vector3(0.0035,0.0035,0.0035)
+    }
+        //console.log(transform);
+        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 ){
+            transform.translation = new THREE.Vector3(pointData.point.x , pointData.point.y , pointData.point.z+1.75);
             console.log('Clipped to Floor Z axis');
         }
         else {
             alert('You need to select a point on the Floor');
         }
-        var q = new THREE.Quaternion();
-        matrix.matrixAutoUpdate = false;
-        q.setFromEuler(euler);
-        var s = new THREE.Vector3(0.0035,0.0035,0.0035);  
-        matrix.compose(t, q, s);
-        return matrix
+        return transform;
  
 }
+
 
 function topCameraView(){
     viewer.setViewCube("[top]");
@@ -193,12 +190,9 @@ function loadModel(viewables, lmvDoc, indexViewable) {
         var initialViewable = viewables[indexViewable];
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
         var modelOptions; // = TransformSimple(); 
-         var modelName;
+        var modelName;
 
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0NhYmluZXQuemlw"){
-            modelOptions = {
-                placementTransform: matrixTransform()
-            };
              modelName = "Cabinet.iam"
         }
         else {
@@ -210,6 +204,11 @@ function loadModel(viewables, lmvDoc, indexViewable) {
         }
         viewer.loadModel(svfUrl, modelOptions, (model) => {
             model.name = modelName;
+             if (model.name === "Cabinet.iam"){
+                var panel = viewer.getExtension(ModelTransformerExtension).panel;
+                panel.setTransform(floorTransform());
+                panel.applyTransform(model);
+            }
             resolve(model)
         })
     })

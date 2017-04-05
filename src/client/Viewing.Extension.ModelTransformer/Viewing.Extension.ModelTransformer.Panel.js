@@ -54,7 +54,7 @@ export default class ModelTransformerPanel extends ToolPanelBase {
     })
 
     var applyTransform = (model, fitToView = false) => {
-
+      debugger
       this.txTool.clearSelection()
       this.rxTool.clearSelection()
 
@@ -71,9 +71,14 @@ export default class ModelTransformerPanel extends ToolPanelBase {
             rotation: this.getRotation(),
             scale: this.getScale()
           }
+
         })
       }
     }
+
+     // Adding this but needs improvement since Panel should be completely separate
+    // from the use of the Model Transformation of the model.
+    this.applyTransform = applyTransform;
 
     this.fullTransformSwitch = new SwitchButton(
       `#${this.container.id}-full-transform-switch`)
