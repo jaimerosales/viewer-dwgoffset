@@ -109,7 +109,7 @@ function onGeometryLoadedHandler(event) {
                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
                 onGeometryLoadedHandler);
         viewer.setQualityLevel(false,false);
-        // viewer.impl.toggleCelShading(true);
+        viewer.showAll();
         viewer.setGroundShadow(false);
         viewer.fitToView();   
 }
