@@ -23,21 +23,16 @@ import './Viewer.css';
 class Viewer extends Component {
 
     componentDidMount() {
-        // Revit Datacenter
-        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L2RhdGFjZW50ZXIucnZ0';
+        // DWG Map
+        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3ktRmFybXMtVGVzdC1mb3ItTG90Zml0LmR3Zw';
         Helpers.launchViewer(documentId);        
     }
 
     loadSecondModel() {
-        // Fusion furniture
-        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0NhYmluZXQuemlw'
+        // DWG House
+        var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9TdW5zZXQtQjRTLUZvci1OZXctUHJvZ3JhbS5kd2c'
         Helpers.loadNextModel(secondModelId);
 
-    }
-
-    moveToTopView() {
-        // Helpers.topCameraView();
-        alert('Implementation will be available soon')
     }
 
     render() {

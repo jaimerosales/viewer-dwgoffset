@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 import Client from '../Client';
-import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
+//import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
 import EventTool from '../Viewer.EventTool/Viewer.EventTool'
 
 var viewer;
@@ -78,10 +78,10 @@ function onDocumentLoadSuccess(doc) {
     viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
-    viewer.loadExtension(ModelTransformerExtension, {
-         parentControl: 'modelTools',
-         autoLoad: true
-    })
+    // viewer.loadExtension(ModelTransformerExtension, {
+    //      parentControl: 'modelTools',
+    //      autoLoad: true
+    // })
     // Choose any of the available viewables.
     var indexViewable = 0;
     var lmvDoc = doc;
@@ -115,100 +115,64 @@ function onGeometryLoadedHandler(event) {
 }
 
 function loadNextModel(documentId) {
-    const extInstance = viewer.getExtension(ModelTransformerExtension);
-     const pickVar = extInstance.panel;
-
-     pickVar.tooltip.setContent(`
-      <div id="pickTooltipId" class="pick-tooltip">
-        <b>Pick position ...</b>
-      </div>`, '#pickTooltipId')
 
     if (!pointData.point){
         alert('You need to select a point on the house floor to snap your Rack');
-        pickVar.tooltip.activate();
     }
     else{
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
-        pickVar.tooltip.deactivate();
     }
 }
 
 function onSelection (event) {
 
     if (event.selections && event.selections.length) {
-      // const selection = event.selections[0]
-      // const dbIds = selection.dbIdArray
-      pointData = viewer.clientToWorld(
+        pointData = viewer.clientToWorld(
         pointer.canvasX,
         pointer.canvasY,
         true)
-
-      //console.log('This is the pointData ',pointData)
-
+        console.log('This is the pointData ',pointData)
     }
 }
-function floorTransform(){
-   
-        var transform = {
-        translation: new THREE.Vector3(0.0, 0.0, 0.0),
-        rotation: new THREE.Vector3(0.0, 0.0, 0.0),
-        scale: new THREE.Vector3(0.0035,0.0035,0.0035)
-    }
-        //console.log(transform);
-        if (pointData.face.normal.x === 0 && pointData.face.normal.y === 0 ){
-            transform.translation = new THREE.Vector3(pointData.point.x , pointData.point.y , pointData.point.z+1.75);
-            console.log('Clipped to Floor Z axis');
-        }
-        else {
-            alert('You need to select a point on the Floor');
-        }
-        return transform;
- 
-}
 
-
-function topCameraView(){
-    viewer.setViewCube("[top]");
-
-    var mySettings = {
-        orbit: false,
-        pan: true,
-        zoom: true,
-        roll: false,
-        fov: false,
-        gotoview: false,
-        walk: false
-    }
-  
-    viewer.navigation.setLockSettings( mySettings );
-    viewer.navigation.setIsLocked( true );
-
+function dwgTransformation(){
+    var matrix = new THREE.Matrix4();
+    var t = new THREE.Vector3(pointData.point.x - 0.15 , pointData.point.y - 0.35, 0);
+    var euler = new THREE.Euler(0, 0, 0,'XYZ');
+    console.log('Clipped to Floor Z axis');
+    
+                      
+    var q = new THREE.Quaternion();
+    q.setFromEuler(euler);
+    var s = new THREE.Vector3(0.015, 0.015, 0.015);    
+    matrix.compose(t, q, s);
+    console.log('my matrix', matrix);
+    return matrix
 }
 
 function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {
         var initialViewable = viewables[indexViewable];
         var svfUrl = lmvDoc.getViewablePath(initialViewable);
-        var modelOptions; // = TransformSimple(); 
+        var modelOptions;
         var modelName;
 
-        if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dmlld2VyLXJvY2tzLXJlYWN0L0NhYmluZXQuemlw"){
-             modelName = "Cabinet.iam"
+        if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9TdW5zZXQtQjRTLUZvci1OZXctUHJvZ3JhbS5kd2c"){
+             modelOptions = {
+                placementTransform: dwgTransformation()
+            };
+
+             modelName = "Sunset-B4S-For-New-Program.dwg"
         }
         else {
             modelOptions = {
                 sharedPropertyDbPath: lmvDoc.getPropertyDbPath()
             };
-            //viewer.impl.toggleCelShading(true);
-            modelName = "fabric.rvt"
+            modelName = "Legacy-Farms-Test-for-Lotfit.dwg"
         }
         viewer.loadModel(svfUrl, modelOptions, (model) => {
             model.name = modelName;
-             if (model.name === "Cabinet.iam"){
-                var panel = viewer.getExtension(ModelTransformerExtension).panel;
-                panel.setTransform(floorTransform());
-                panel.applyTransform(model);
-            }
+          
             resolve(model)
         })
     })
@@ -217,8 +181,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
 
 const Helpers = {
   launchViewer,
-  loadNextModel,
-  topCameraView
-};
+  loadNextModel
+}
 
 export default Helpers;
