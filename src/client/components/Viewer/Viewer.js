@@ -22,6 +22,15 @@ import './Viewer.css';
 
 class Viewer extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            value: 0
+        }
+        this.handleValueChange = this.handleValueChange.bind(this);
+        this.loadSecondModel = this.loadSecondModel.bind(this);
+    }
+
     componentDidMount() {
         // DWG Map
         var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3ktRmFybXMtVGVzdC1mb3ItTG90Zml0LmR3Zw';
@@ -31,8 +40,14 @@ class Viewer extends Component {
     loadSecondModel() {
         // DWG House
         var secondModelId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9TdW5zZXQtQjRTLUZvci1OZXctUHJvZ3JhbS5kd2c'
-        Helpers.loadNextModel(secondModelId);
+        Helpers.loadNextModel(secondModelId, this.state.value);
 
+    }
+
+    handleValueChange(event) {
+        this.setState({
+            value: event.target.value
+        });
     }
 
     render() {
@@ -45,7 +60,7 @@ class Viewer extends Component {
             <button className="model-button" onClick={this.loadSecondModel} >
                 <i className="fa fa-plus-square"></i>
             </button>
-
+            <input min="0" value={this.state.value} onChange={this.handleValueChange} className="rotate-field" />
           </div>
         );
     }

@@ -17,11 +17,12 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 import Client from '../Client';
-//import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
+import ModelTransformerExtension from '../../Viewing.Extension.ModelTransformer';
 import EventTool from '../Viewer.EventTool/Viewer.EventTool'
 
 var viewer;
 var pointer;
+var rotationValue;
 
 var getToken = { accessToken: Client.getaccesstoken()};
 var pointData ={};
@@ -78,10 +79,10 @@ function onDocumentLoadSuccess(doc) {
     viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
-    // viewer.loadExtension(ModelTransformerExtension, {
-    //      parentControl: 'modelTools',
-    //      autoLoad: true
-    // })
+    viewer.loadExtension(ModelTransformerExtension, {
+         parentControl: 'modelTools',
+         autoLoad: true
+    })
     // Choose any of the available viewables.
     var indexViewable = 0;
     var lmvDoc = doc;
@@ -114,12 +115,13 @@ function onGeometryLoadedHandler(event) {
         viewer.fitToView();   
 }
 
-function loadNextModel(documentId) {
+function loadNextModel(documentId , degrees) {
 
     if (!pointData.point){
         alert('You need to select a point on the house floor to snap your Rack');
     }
     else{
+        rotationValue = degrees;
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
     }
 }
@@ -137,11 +139,9 @@ function onSelection (event) {
 
 function dwgTransformation(){
     var matrix = new THREE.Matrix4();
-    var t = new THREE.Vector3(pointData.point.x - 0.15 , pointData.point.y - 0.35, 0);
-    var euler = new THREE.Euler(0, 0, 0,'XYZ');
-    console.log('Clipped to Floor Z axis');
+    var t = new THREE.Vector3(pointData.point.x , pointData.point.y , 0);
+    var euler = new THREE.Euler(0, 0, rotationValue * Math.PI/180,'XYZ');
     
-                      
     var q = new THREE.Quaternion();
     q.setFromEuler(euler);
     var s = new THREE.Vector3(0.015, 0.015, 0.015);    
@@ -149,6 +149,7 @@ function dwgTransformation(){
     console.log('my matrix', matrix);
     return matrix
 }
+
 
 function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {
@@ -170,9 +171,9 @@ function loadModel(viewables, lmvDoc, indexViewable) {
             };
             modelName = "Legacy-Farms-Test-for-Lotfit.dwg"
         }
+
         viewer.loadModel(svfUrl, modelOptions, (model) => {
             model.name = modelName;
-          
             resolve(model)
         })
     })
