@@ -44,6 +44,10 @@ class Viewer extends Component {
 
     }
 
+    toggle() {
+        Helpers.toggleVisibility();
+    }
+
     handleValueChange(event) {
         this.setState({
             value: event.target.value
@@ -61,6 +65,9 @@ class Viewer extends Component {
                 <i className="fa fa-plus-square"></i>
             </button>
             <input min="0" value={this.state.value} onChange={this.handleValueChange} className="rotate-field" />
+            <button className="toogle-button" onClick={this.toggle}>
+                <i className="fa fa-eye"></i>
+            </button>
           </div>
         );
     }

@@ -150,6 +150,25 @@ function dwgTransformation(){
     return matrix
 }
 
+function processLayers(model) {
+            var layersRoot = model.getLayersRoot();
+            console.log('Complete Layer Tree', layersRoot)
+            console.log('Model (' + model.id + ') has (' + layersRoot.childCount + ') children.');
+            layersRoot.children.forEach(function(child, index){
+                if (child.isLayer) {
+                    console.log(' Layer: (' + child.name + ') with Id: (' + child.index + ')');
+                } else {
+                    console.log(' Not a layer, TODO: Check children recursively.'); // TODO
+                }
+            });
+        }
+
+var doToggle = false;
+function toggleVisibility() {
+    viewer.impl.setLayerVisible([1], doToggle);
+    doToggle = !doToggle;
+}
+
 
 function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {
@@ -174,6 +193,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
 
         viewer.loadModel(svfUrl, modelOptions, (model) => {
             model.name = modelName;
+            processLayers(model);
             resolve(model)
         })
     })
@@ -182,7 +202,8 @@ function loadModel(viewables, lmvDoc, indexViewable) {
 
 const Helpers = {
   launchViewer,
-  loadNextModel
+  loadNextModel,
+  toggleVisibility
 }
 
 export default Helpers;
