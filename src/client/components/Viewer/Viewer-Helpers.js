@@ -32,6 +32,9 @@ var pointData ={};
 const Autodesk = window.Autodesk;
 const THREE = window.THREE;
 
+var LotsGeometry = {};
+var lineCount = 1;
+
 function launchViewer(documentId) {
  getToken.accessToken.then((token) => { 
     var options = {
@@ -77,6 +80,8 @@ function onDocumentLoadSuccess(doc) {
     //load model.
     viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoadedHandler);
     viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
+   // viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT,onGeomSelect);
+   
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
     viewer.loadExtension(ModelTransformerExtension, {
@@ -115,40 +120,104 @@ function onGeometryLoadedHandler(event) {
         viewer.fitToView();   
 }
 
-function loadNextModel(documentId , degrees) {
-
-    if (!pointData.point){
-        alert('You need to select a point on the house floor to snap your Rack');
-    }
-    else{
-        rotationValue = degrees;
-        Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
-    }
-}
-
 function onSelection (event) {
+
+    if (event.selections.length>0){
+        event.selections[0].model = event.target.model;
+    }
 
     if (event.selections && event.selections.length) {
         pointData = viewer.clientToWorld(
         pointer.canvasX,
         pointer.canvasY,
         true)
-        console.log('This is the pointData ',pointData)
+        console.log('This is the pointData ',pointData)       
+        onGeomSelect(event);
     }
+
 }
 
-function dwgTransformation(){
-    var matrix = new THREE.Matrix4();
-    var t = new THREE.Vector3(pointData.point.x , pointData.point.y , 0);
-    var euler = new THREE.Euler(0, 0, rotationValue * Math.PI/180,'XYZ');
+function onGeomSelect(event){
+    // Fit Camera to Polyline view
+    viewer.fitToView(event.selections[0].dbIdArray ,viewer.model)
+
+    if (event.selections[0].dbIdArray.length>0){
+        event.selections[0].fragIdsArray.forEach(function(fragId){
+            var m = viewer.impl.getRenderProxy(viewer.model,0);
+            var vbr = new Autodesk.Viewing.Private.VertexBufferReader(m.geometry, viewer.impl.use2dInstancing)  
+            vbr.enumGeomsForObject(event.selections[0].dbIdArray[0], new GeometryCallback())
+        })
+    }
+    lineCount = 1;
+    console.log('my LotsGeometry Object', LotsGeometry)
+    LotsGeometry = {};
     
-    var q = new THREE.Quaternion();
-    q.setFromEuler(euler);
-    var s = new THREE.Vector3(0.015, 0.015, 0.015);    
-    matrix.compose(t, q, s);
-    console.log('my matrix', matrix);
-    return matrix
 }
+
+function myPageToModelConversion( x1, y1, x2, y2, vpId ) {
+
+    var vpXform = viewer.model.getPageToModelTransform(vpId);
+
+    var modelPt1 = new THREE.Vector3().set(x1, y1, 0).applyMatrix4(vpXform);
+    var modelPt2 = new THREE.Vector3().set(x2, y2, 0).applyMatrix4(vpXform);
+
+    var pointX1 = modelPt1.x;
+    var pointY1 = modelPt1.y;
+    var pointX2 = modelPt2.x;
+    var pointY2 = modelPt2.y;
+
+    // // Simple Distance Formula 
+    // var a = pointX2 - pointX1
+    // var b = pointY2 - pointY1
+    // var c = Math.sqrt( a*a + b*b );
+    var cLinePoints = {
+        pointX1,
+        pointY1,
+        pointX2,
+        pointY2
+    }
+
+    return cLinePoints;
+};
+
+
+function GeometryCallback(viewer, snapper, aDetectRadius) {
+        
+}
+
+GeometryCallback.prototype.onLineSegment = function(x1, y1, x2, y2, vpId) {
+      
+    var linePoints = myPageToModelConversion(x1, y1, x2, y2, vpId)
+
+    switch (true) {
+        case (lineCount === 1):
+            LotsGeometry.line = linePoints;
+        break;
+        case (lineCount === 2):
+            LotsGeometry.line2 = linePoints;
+        break;
+        case (lineCount === 3):
+            LotsGeometry.line3 = linePoints;
+        break;
+        case (lineCount === 4):
+            LotsGeometry.line4 = linePoints;
+        break;
+        default:
+            console.log('out of lotsgem case');
+        break;
+    }
+
+    lineCount++;
+
+};
+
+GeometryCallback.prototype.onCircularArc = function(cx, cy, start, end, radius, vpId) {
+    console.log('The value of center x point ', cx ,'And center y point is ', cy, 'with a radious of', radius);
+};
+
+GeometryCallback.prototype.onEllipticalArc = function(cx, cy, start, end, major, minor, tilt, vpId) {
+  
+};
 
 function processLayers(model) {
             var layersRoot = model.getLayersRoot();
@@ -165,10 +234,39 @@ function processLayers(model) {
 
 var doToggle = false;
 function toggleVisibility() {
-    viewer.impl.setLayerVisible([1], doToggle);
+    var layersRoot = viewer.model.getLayersRoot();
+    layersRoot.children.forEach(function(child, index){
+        if(!child.name.includes("Setback")){
+            viewer.impl.setLayerVisible([child.index], doToggle);
+        }
+    })
     doToggle = !doToggle;
+    
 }
 
+function dwgTransformation(){
+    var matrix = new THREE.Matrix4();
+    var t = new THREE.Vector3(pointData.point.x - 0.05 , pointData.point.y - 0.12 , 0);
+    var euler = new THREE.Euler(0, 0, rotationValue * Math.PI/180,'XYZ');
+    
+    var q = new THREE.Quaternion();
+    q.setFromEuler(euler);
+    var s = new THREE.Vector3(0.008, 0.008, 0.008);    
+    matrix.compose(t, q, s);
+    console.log('my matrix', matrix);
+    return matrix
+}
+
+function loadNextModel(documentId , degrees) {
+
+    if (!pointData.point){
+        alert('You need to select a point on the house floor to snap your Rack');
+    }
+    else{
+        rotationValue = degrees;
+        Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    }
+}
 
 function loadModel(viewables, lmvDoc, indexViewable) {
     return new Promise(async(resolve, reject)=> {

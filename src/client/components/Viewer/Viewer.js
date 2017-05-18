@@ -32,8 +32,11 @@ class Viewer extends Component {
     }
 
     componentDidMount() {
-        // DWG Map
-        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3ktRmFybXMtVGVzdC1mb3ItTG90Zml0LmR3Zw';
+        // DWG lot with polylines
+        var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3klMjBGYXJtcyUyMFRlc3QlMjBmb3IlMjBMb3RmaXQtSGF0Y2hQTElORVMuZHdn'
+        
+        //DWG lot
+        //var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3ktRmFybXMtVGVzdC1mb3ItTG90Zml0LmR3Zw';
         Helpers.launchViewer(documentId);        
     }
 
