@@ -34,7 +34,9 @@ class Viewer extends Component {
     componentDidMount() {
         // DWG lot with polylines
         var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3klMjBGYXJtcyUyMFRlc3QlMjBmb3IlMjBMb3RmaXQtSGF0Y2hQTElORVMuZHdn'
-        
+          
+          //var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9TdW5zZXQtQjRTLUZvci1OZXctUHJvZ3JhbS5kd2c'
+     
         //DWG lot
         //var documentId = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9MZWdhY3ktRmFybXMtVGVzdC1mb3ItTG90Zml0LmR3Zw';
         Helpers.launchViewer(documentId);        
@@ -49,6 +51,10 @@ class Viewer extends Component {
 
     toggle() {
         Helpers.toggleVisibility();
+    }
+
+    getAllIds() {
+        Helpers.listElements();
     }
 
     handleValueChange(event) {
@@ -70,6 +76,9 @@ class Viewer extends Component {
             <input min="0" value={this.state.value} onChange={this.handleValueChange} className="rotate-field" />
             <button className="toogle-button" onClick={this.toggle}>
                 <i className="fa fa-eye"></i>
+            </button>
+            <button className="allIds-button" onClick={this.getAllIds}>
+                <i className="fa fa-database"></i>
             </button>
           </div>
         );

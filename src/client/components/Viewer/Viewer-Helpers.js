@@ -80,7 +80,7 @@ function onDocumentLoadSuccess(doc) {
     //load model.
     viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoadedHandler);
     viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
-   // viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT,onGeomSelect);
+
    
     viewer.prefs.tag('ignore-producer');
     viewer.impl.disableRollover(true);
@@ -116,8 +116,7 @@ function onGeometryLoadedHandler(event) {
                 onGeometryLoadedHandler);
         viewer.setQualityLevel(false,false);
         viewer.showAll();
-        viewer.setGroundShadow(false);
-        viewer.fitToView();   
+        viewer.setGroundShadow(false);  
 }
 
 function onSelection (event) {
@@ -132,12 +131,12 @@ function onSelection (event) {
         pointer.canvasY,
         true)
         console.log('This is the pointData ',pointData)       
-        onGeomSelect(event);
+        onGeometrySelect(event);
     }
 
 }
 
-function onGeomSelect(event){
+function onGeometrySelect(event){
     // Fit Camera to Polyline view
     viewer.fitToView(event.selections[0].dbIdArray ,viewer.model)
 
@@ -150,6 +149,20 @@ function onGeomSelect(event){
     }
     lineCount = 1;
     console.log('my LotsGeometry Object', LotsGeometry)
+    LotsGeometry = {};
+    
+}
+
+function autoGeometryExtractor(dbIdArray){
+    if (dbIdArray.dbId != null){
+        viewer.model.getData().fragments.dbId2fragId.forEach(function(fragId){
+            var m = viewer.impl.getRenderProxy(viewer.model,0);
+            var vbr = new Autodesk.Viewing.Private.VertexBufferReader(m.geometry, viewer.impl.use2dInstancing)  
+            vbr.enumGeomsForObject(dbIdArray.dbId, new GeometryCallback())
+        })
+    }
+    console.log(dbIdArray.properties[3].displayValue,' Have the following Geometry Points ', LotsGeometry)
+    lineCount = 1;
     LotsGeometry = {};
     
 }
@@ -170,6 +183,7 @@ function myPageToModelConversion( x1, y1, x2, y2, vpId ) {
     // var a = pointX2 - pointX1
     // var b = pointY2 - pointY1
     // var c = Math.sqrt( a*a + b*b );
+    
     var cLinePoints = {
         pointX1,
         pointY1,
@@ -202,8 +216,12 @@ GeometryCallback.prototype.onLineSegment = function(x1, y1, x2, y2, vpId) {
         case (lineCount === 4):
             LotsGeometry.line4 = linePoints;
         break;
+        case (lineCount === 5):
+            if(!LotsGeometry.line === linePoints)
+              LotsGeometry.line5 = linePoints;
+        break;
         default:
-            console.log('out of lotsgem case');
+            //console.log('out of lotsgem case');
         break;
     }
 
@@ -212,7 +230,8 @@ GeometryCallback.prototype.onLineSegment = function(x1, y1, x2, y2, vpId) {
 };
 
 GeometryCallback.prototype.onCircularArc = function(cx, cy, start, end, radius, vpId) {
-    console.log('The value of center x point ', cx ,'And center y point is ', cy, 'with a radious of', radius);
+    //TODO Calculation for Circular Arcs in model
+    //console.log('The value of center x point ', cx ,'And center y point is ', cy, 'with a radious of', radius);
 };
 
 GeometryCallback.prototype.onEllipticalArc = function(cx, cy, start, end, major, minor, tilt, vpId) {
@@ -243,6 +262,58 @@ function toggleVisibility() {
     doToggle = !doToggle;
     
 }
+
+function getAllLeafComponents(model, callback) {
+    var components = [];
+
+    function getLeafComponentsRec(tree, parentId) {
+      if (tree.getChildCount(parentId) > 0) {
+        tree.enumNodeChildren(parentId, function (childId) {
+          getLeafComponentsRec(tree, childId);
+        });
+      }
+      else
+        components.push(parentId);
+      return components;
+    }
+
+    var instanceTree = model.getInstanceTree();
+    var allLeafComponents = getLeafComponentsRec(instanceTree, instanceTree.nodeAccess.rootId);
+    callback(allLeafComponents);
+}
+
+
+function listElements() {
+    getAllLeafComponents(viewer.model, function (modelAdbIds) {
+        // this count will help wait until getProperties end all callbacks
+        var count = modelAdbIds.length;
+
+        var modelAExtIds = {};
+        modelAdbIds.forEach(function (modelAdbId) {
+          viewer.model.getProperties(modelAdbId, function (modelAProperty) {
+            modelAExtIds[modelAProperty.externalId] = {'dbId': modelAdbId, 'properties': modelAProperty.properties};
+            //console.log(modelAExtIds[modelAProperty.externalId])
+            
+            if(modelAExtIds[modelAProperty.externalId].properties[3].displayValue.includes("Setback")&&
+               modelAExtIds[modelAProperty.externalId].properties[1].displayValue.includes("Poly") ){
+                autoGeometryExtractor(modelAExtIds[modelAProperty.externalId])
+                //console.log('all Lot model ids', modelAExtIds[modelAProperty.externalId].properties);
+            }
+
+            if(modelAExtIds[modelAProperty.externalId].properties[1].displayValue.includes("Hatch") ){
+                autoGeometryExtractor(modelAExtIds[modelAProperty.externalId])
+                //console.log('all Lot model ids', modelAExtIds[modelAProperty.externalId].properties);
+            }
+
+            count--;
+            if (count === 0)  
+                return;
+          });
+        });
+      });
+  }
+
+
 
 function dwgTransformation(){
     var matrix = new THREE.Matrix4();
@@ -277,6 +348,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
 
         if (lmvDoc.myData.guid.toString() === "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFpbWVkd2dwb2NidWNrZXRscWNnYWhjbXp3ODEwbjdvNmk3NGlhcGt3dTBweGFzNy9TdW5zZXQtQjRTLUZvci1OZXctUHJvZ3JhbS5kd2c"){
              modelOptions = {
+                sharedPropertyDbPath: lmvDoc.getPropertyDbPath(),
                 placementTransform: dwgTransformation()
             };
 
@@ -293,6 +365,7 @@ function loadModel(viewables, lmvDoc, indexViewable) {
             model.name = modelName;
             processLayers(model);
             resolve(model)
+            console.log(model.getInstanceTree())
         })
     })
 }
@@ -301,7 +374,8 @@ function loadModel(viewables, lmvDoc, indexViewable) {
 const Helpers = {
   launchViewer,
   loadNextModel,
-  toggleVisibility
+  toggleVisibility,
+  listElements
 }
 
 export default Helpers;
