@@ -78,12 +78,12 @@ function onDocumentLoadSuccess(doc) {
     })
 
     //load model.
-    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoadedHandler);
+    //viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoadedHandler);
     viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,onSelection);
 
    
     viewer.prefs.tag('ignore-producer');
-    viewer.impl.disableRollover(true);
+    //viewer.impl.disableRollover(true);
     viewer.loadExtension(ModelTransformerExtension, {
          parentControl: 'modelTools',
          autoLoad: true
@@ -108,16 +108,16 @@ function onDocumentLoadFailure(viewerErrorCode) {
 // Model Geometry loaded callback
 //
 //////////////////////////////////////////////////////////////////////////
-function onGeometryLoadedHandler(event) {
-        event.target.model = event.model
-        var viewer = event.target;
-        viewer.removeEventListener(
-                Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
-                onGeometryLoadedHandler);
-        viewer.setQualityLevel(false,false);
-        viewer.showAll();
-        viewer.setGroundShadow(false);  
-}
+// function onGeometryLoadedHandler(event) {
+//         event.target.model = event.model
+//         var viewer = event.target;
+//         viewer.removeEventListener(
+//                 Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+//                 onGeometryLoadedHandler);
+//         viewer.setQualityLevel(false,false);
+//         viewer.showAll();
+//         viewer.setGroundShadow(false);
+// }
 
 function onSelection (event) {
 
